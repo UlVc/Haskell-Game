@@ -20,7 +20,7 @@ module Main(main) where
      x <- getLine
      case x of 
         "1" -> jugar
-        "2" -> vidas 4
+        "2" -> vidas 4 0
         "3" -> instrucciones
         "4" -> do putStrLn "Ok ciao \128075"; exitSuccess
         otherwise -> do putStrLn "Elige una opción válida."; menu
@@ -52,24 +52,31 @@ module Main(main) where
      repetir
 
     -- | Function that starts the game. (five lives)
-    vidas :: Int -> IO ()
-    vidas n = do
+    vidas :: Int -> Int -> IO ()
+    vidas n s = do
         x <- randomRIO (0,119) :: IO Int
         let a = rand x
         putStr "¿Cuál es el nombre de la película? "
         putStrLn $ duplicar "\10084\65039" $ n + 1
-        putStrLn $ snd a
+        putStrLn $ snd a ++ fst a
         u <- getLine
         let opcion = modificarTexto u
             respuesta = modificarTexto $ fst a
+
         if opcion /= respuesta then do
+
             if n > 0 then do
                 putStrLn "\10060"
-                vidas $ n - 1
+                vidas (n-1) s
             else
-                putStrLn "Game Over \128557\128557\128557"
+                putStrLn "Game Over \128557\128557\128557";
+                putStr $ "Llevabas " ++ (show s) ++ " respuestas correctas.";
+                putStrLn "\n";
+                repetir
         else
-            putStrLn "\9989"
+            putStrLn "\9989";
+            print (s + 1);
+            vidas n (s + 1)
         repetir
 
     -- | Function that acts when the user lose or wins the game.
@@ -79,7 +86,7 @@ module Main(main) where
         opc <- getLine
         case opc of
             "1" -> jugar
-            "2" -> vidas 4
+            "2" -> vidas 4 0
             "3" -> menu
             otherwise -> do putStrLn "Opción inválida."; repetir
 
